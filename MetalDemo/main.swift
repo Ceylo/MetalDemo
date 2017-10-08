@@ -12,7 +12,7 @@ for device in devices {
   ]
   
   for renderer in renderers {
-    for _ in 1...10 {
+    for _ in 1...3 {
       let renderStart = Date()
       renderer.render()
       let renderTimeMs = Date().timeIntervalSince(renderStart) * 1000

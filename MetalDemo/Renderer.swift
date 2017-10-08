@@ -8,12 +8,17 @@ func loadInputImage(device : MTLDevice, location : URL) -> MTLTexture
 {
   let loader = MTKTextureLoader(device: device)
   let loadOptions : [MTKTextureLoader.Option : Any] = [
-    MTKTextureLoader.Option.textureUsage : NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
     MTKTextureLoader.Option.origin : MTKTextureLoader.Origin.topLeft.rawValue,
-    MTKTextureLoader.Option.SRGB : NSNumber(value: false)
+    MTKTextureLoader.Option.SRGB : NSNumber(value: false),
+    MTKTextureLoader.Option.textureCPUCacheMode : NSNumber(value: MTLCPUCacheMode.writeCombined.rawValue),
+    MTKTextureLoader.Option.textureUsage : NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
+    MTKTextureLoader.Option.textureStorageMode : NSNumber(value: MTLStorageMode.private.rawValue)
     ]
   
-  return (try? loader.newTexture(URL: location, options: loadOptions))!
+  let s = Date()
+  let tex = (try? loader.newTexture(URL: location, options: loadOptions))!
+  print("Load input for \(device.name) : \(Date().timeIntervalSince(s))")
+  return tex
 }
 
 class Renderer {
@@ -125,9 +130,9 @@ class MetalPerformanceShaders_Renderer : Renderer
   
   override init(imageURL : URL, device : MTLDevice)
   {
-    blurMPSFilter = MPSImageBox(device: device, kernelWidth: 3, kernelHeight: 3)
+    blurMPSFilter = MPSImageBox(device: device, kernelWidth: 9, kernelHeight: 9)
     blurMPSFilter.edgeMode = .clamp
-    print(blurMPSFilter.sourceRegion(destinationSize: MTLSizeMake(200, 300, 1)))
+//    print(blurMPSFilter.sourceRegion(destinationSize: MTLSizeMake(200, 300, 1)))
     super.init(imageURL: imageURL, device: device);
   }
   

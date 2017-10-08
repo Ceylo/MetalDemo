@@ -22,8 +22,8 @@ class Renderer {
   var commandQueue : MTLCommandQueue
   var inputTexture : MTLTexture
   var outputTexture : MTLTexture
-  var workTexture1 : MTLTexture
-  var workTexture2 : MTLTexture
+  var workingTexture1 : MTLTexture
+  var workingTexture2 : MTLTexture
   
   init(imageURL : URL, device : MTLDevice)
   {
@@ -44,10 +44,10 @@ class Renderer {
     textureDescriptor.pixelFormat = .bgra8Unorm
     textureDescriptor.usage = [ .shaderRead, .shaderWrite ]
     textureDescriptor.storageMode = .private
-    workTexture1 = device.makeTexture(descriptor: textureDescriptor)!
-    workTexture1.label = "Working texture 1"
-    workTexture2 = device.makeTexture(descriptor: textureDescriptor)!
-    workTexture2.label = "Working texture 2"
+    workingTexture1 = device.makeTexture(descriptor: textureDescriptor)!
+    workingTexture1.label = "Working texture 1"
+    workingTexture2 = device.makeTexture(descriptor: textureDescriptor)!
+    workingTexture2.label = "Working texture 2"
     
     commandQueue = device.makeCommandQueue()!
   }
@@ -66,9 +66,9 @@ class Renderer {
     let allCommandsBuffer = commandQueue.makeCommandBuffer()!
     allCommandsBuffer.label = "CommandBuffer for a single correction Execute"
     
-    enqueueKernel(commandBuffer: allCommandsBuffer, input: inputTexture, output: workTexture1)
-    enqueueKernel(commandBuffer: allCommandsBuffer, input: workTexture1, output: workTexture2)
-    enqueueKernel(commandBuffer: allCommandsBuffer, input: workTexture2, output: outputTexture)
+    enqueueKernel(commandBuffer: allCommandsBuffer, input: inputTexture, output: workingTexture1)
+    enqueueKernel(commandBuffer: allCommandsBuffer, input: workingTexture1, output: workingTexture2)
+    enqueueKernel(commandBuffer: allCommandsBuffer, input: workingTexture2, output: outputTexture)
     
     // Ask to fetch texture from GPU
     let blitEncoder = allCommandsBuffer.makeBlitCommandEncoder()!
